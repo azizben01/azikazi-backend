@@ -20,6 +20,13 @@ func main() {
 	// router.POST("/postask", functions.PostTask)
 	router.POST("/postask", functions.AuthMiddleware(),  functions.PostTask)
 	router.GET("/getask",  functions.GetAllTasks)
+	router.GET("/tasks/:id", functions.GetTaskByID)
+	router.PUT("/tasks/:id", functions.UpdateTask)
+	router.GET("/mytasks", functions.AuthMiddleware(), functions.GetMyTasks)
+	router.DELETE("/tasks/:id", functions.AuthMiddleware(), functions.DeleteTask)
+
+
+
 
 	router.GET("/", func(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{
