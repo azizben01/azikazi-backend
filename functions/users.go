@@ -25,6 +25,7 @@ type Users struct {
 	Updated          string     `json:"updated"`
 	ResetToken       *string    `json:"resetToken"` // Pointer to string to handle NULL
 	ResetTokenExpiry *time.Time `json:"resetTokenExpiry"`
+	IsDeleted        bool       `json:"is_deleted"`
 }
 
 // Function to validate email format using regex
@@ -55,7 +56,7 @@ func CreateUser(ctx *gin.Context) {
 
 	// Check if the email already exists
 	var existingEmail string
-	err := database.DB.QueryRow("SELECT email FROM users WHERE email = $1", req.Email).Scan(&existingEmail)
+	err := database.DB.QueryRow("SELECT email FROM users WHERE email = $1 AND isDeleted = FALSE", req.Email).Scan(&existingEmail)
 	if err != nil && err != sql.ErrNoRows {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		fmt.Println("there is an error with the database:", err)
@@ -111,7 +112,7 @@ func LoginUser(c *gin.Context) {
 
 	var storedEmployee Users
 	err := database.DB.QueryRow(
-		"SELECT user_id, name, email, password, role, created, resetToken, resetTokenExpiry FROM users WHERE email = $1",
+		"SELECT user_id, name, email, password, role, created, resetToken, resetTokenExpiry FROM users WHERE email = $1 AND isDeleted = FALSE",
 		req.Email).
 		Scan(
 			&storedEmployee.User_id, &storedEmployee.Name, &storedEmployee.Email, &storedEmployee.Password, &storedEmployee.Role,

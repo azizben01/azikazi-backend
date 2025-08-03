@@ -59,4 +59,17 @@ func (database *Database) InitDatabase() {
 	}
 }
 
+// RunMigrations executes migration queries to add isDeleted columns to existing tables
+func RunMigrations() {
+	migrationQueries := GetMigrationQueries()
+	for _, query := range migrationQueries {
+		_, err := DB.Exec(query)
+		if err != nil {
+			log.Printf("Migration error: %v", err)
+		} else {
+			log.Println("Migration executed successfully")
+		}
+	}
+}
+
 // key = value

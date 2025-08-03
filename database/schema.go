@@ -11,7 +11,8 @@ func GetTableQueries() []string {
 	created             TEXT NOT NULL,
 	updated             TEXT,
 	resettoken          TEXT,
-  resettokenexpiry    TIMESTAMP WITH TIME ZONE
+  resettokenexpiry    TIMESTAMP WITH TIME ZONE,
+	isDeleted           BOOLEAN DEFAULT FALSE
 
   )`,
 
@@ -23,13 +24,24 @@ func GetTableQueries() []string {
   location			  VARCHAR(100),
   time_preference VARCHAR(50),
   price           INTEGER,
-  status			    VARCHAR(20) DEFAULT 'open', -- open, accepted, completed
-
+  status			    VARCHAR(20) DEFAULT 'open',
   posted_by 		  INTEGER REFERENCES users(user_id),
   assigned_to 		INTEGER REFERENCES users(user_id),
   expires_at 		  TIMESTAMP,
   created_at 		  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at 		  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at 		  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  isDeleted           BOOLEAN DEFAULT FALSE
 )`,
+
+		`CREATE TABLE IF NOT EXISTS task_applications (
+  application_id SERIAL PRIMARY KEY,
+  task_id        INTEGER REFERENCES task(task_id),
+  applicant_id   INTEGER REFERENCES users(user_id),
+  message        TEXT,
+  status			    VARCHAR(20) DEFAULT 'pending',
+  created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  isDeleted           BOOLEAN DEFAULT FALSE
+);
+`,
 	}
 }
